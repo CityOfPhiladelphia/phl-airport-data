@@ -1,0 +1,11 @@
+{
+    "name": "phl-airport-data",
+    "version": "0.0.1",
+    "description": "A REST and WebSocket API for PHL Flight Information Data",
+    "dependencies": {
+        "socket.io": "latest",
+        "express": "latest",
+        "redis": "latest"
+    },
+    "author": "Mark Headd"
+}

@@ -1,0 +1,45 @@
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://127.0.0.1:3000/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	
+	var socket = io.connect('http://127.0.0.1:3000');
+
+	socket.on("update", function(data) {
+
+		var flightData = JSON.parse(data);
+		$("#information").remove();
+		$("#data").append("<table id=\"information\">");
+		$("#information").append("<tr><td>Last Updated</td><td>" + flightData.updated + "</td></tr>");
+		$("#information").append("<tr><td>Direction</td><td>" + flightData.direction + "</td>flightData.direction</tr>");
+		$("#information").append("<tr><td>FlightType</td><td>" + flightData.flightType + "</td></tr>");
+		$("#information").append("<tr><td>Airline</td><td>" + flightData.airline + "</td></tr>");
+		$("#information").append("<tr><td>Flight Number</td><td>" + flightData.flightNumber + "</td></tr>");
+		$("#information").append("<tr><td>Airport</td><td>" + flightData.airport + "</td></tr>");
+		$("#information").append("<tr><td>Scheduled Date / Time</td><td>" + flightData.scheduledDateTime + "</td></tr>");
+		$("#information").append("<tr><td>Estimated Date / Time</td><td>" + flightData.estimatedDateTime + "</td></tr>");
+		$("#information").append("<tr><td>Gate</td><td>" + flightData.gate + "</td></tr>");
+		$("#information").append("<tr><td>Status</td><td>" + flightData.status + "</td></tr>");
+		$("#information").append("</table>");
+	});
+
+	$("#target").submit(function() {
+		var flightNumber = $("#number").val();
+		socket.emit("send", flightNumber);
+  		return false;
+	});
+
+});
+</script>
+</head>
+<body>
+<h2>WebSocket Test</h2>
+<form id="target">
+  <input id="number" type="text" value="" />
+  <input type="submit" value="Get Flight Info." />
+</form>
+<div id="data"></div>
+</body>
+</html>
