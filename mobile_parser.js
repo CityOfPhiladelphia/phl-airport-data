@@ -43,7 +43,6 @@ flightarray = xmlDoc.substr(xmlDoc.indexOf("\n") + 1, xmlDoc.length).split("\n")
                 }
                 else if (flightarray[b].terminal === "B" || flightarray[b].terminal === "C") {
                     flightarray[b].carousel = "B/C Carousel " + flightarray[b].fullline.substr(65, 1);
-                    flightarray[b].security = "B/C";
                 }
                 else if (flightarray[b].terminal === "D" || flightarray[b].terminal === "E") {
                     flightarray[b].carousel = "D/E Carousel " + flightarray[b].fullline.substr(65, 1);
