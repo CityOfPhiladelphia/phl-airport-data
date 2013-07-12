@@ -5,7 +5,8 @@
     "dependencies": {
         "socket.io": "latest",
         "express": "latest",
-        "redis": "latest"
+        "redis": "latest",
+        "forever": "latest"
     },
     "author": "Mark Headd"
 }
