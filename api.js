@@ -1,6 +1,5 @@
 /**
  * TODO: Error handling / Logging.
- * TODO: Forever!
  */
 
 // Include required modules.
@@ -13,7 +12,7 @@ var port = process.argv[2] || 3000;
 
 var app = express();
 
-// REST endpoint.
+// Server static assets.
 app.get('/', function(req, res){
 	res.sendfile(__dirname + '/index.html');
 });
@@ -26,31 +25,22 @@ app.get('/assets/js/:file', function(req, res) {
 	res.sendfile(__dirname + '/assets/js/' + req.params.file);
 });
 
-app.get('/a/:number', function(req, res){
+// REST endpoint.
+app.get('/:number', function(req, res){
 	var flightNumber = req.params.number;
-	getFlightInformation(0, flightNumber, res, req);
-});
-
-app.get('/d/:number', function(req, res){
-	var flightNumber = req.params.number;
-	getFlightInformation(1, flightNumber, res, req);
-});
-
-function getFlightInformation(direction, flightNumber, res, req) {
 	var redisClient = redis.createClient();
-	redisClient.select(direction);
-	redisClient.get(flightNumber, function(err, reply) {
+	redisClient.hgetall(flightNumber, function(err, obj) {
+
 		res.set('Cache-Control', 'max-age=60');
 		if(req.query.callback) {
-			res.jsonp(200, reply);
+			res.jsonp(200, makeArray(obj));
 		}
 		else {
-			res.json(200, reply);
+			res.json(200, makeArray(obj));
 		}
 	});
 	redisClient.quit();
-	return;
-}
+});
 
 // WebSocket endpoint.
 var socket = require('socket.io').listen(app.listen(port),{log: false});
@@ -61,43 +51,41 @@ socket.on('connection', function(client){
 
 	client.on('send', function(data) {
 
-		// If client is already subscribed, get a fresh connection
+		// If client has already subscribed to a Redis channel, get a fresh connection.
 		if(redisClient.connected) {
 			redisClient.quit();
 			redisClient = redis.createClient();
 		}
 
 		var clientMessage = JSON.parse(data);
-	   	if(clientMessage.direction == "Arrival") {
-	   		redisClient.select(0); // Database for arriving flights.
-	   	} else {
-	   		redisClient.select(1); // Database for departing flights.
-	   	}
 
 		// Respond with curret flight status.
-		redisClient.get(clientMessage.flightNumber, function(err, reply) {
-			client.emit("update", reply);
+		redisClient.hgetall(clientMessage.flightNumber, function(err, obj) {
+			// Construct the array of flight objects to return.
+			client.emit("update", makeArray(obj));
 		});
-
-		// Denotes whether the client is subscribed to an arriving or departing flight.
-		client.set('direction', clientMessage.direction);
 
 		// Listen on Redis channel for updates.
 		redisClient.subscribe(clientMessage.flightNumber);
-		redisClient.on("message", function (channel, message) {
-			
-			// When a message on a channel is recevied, ensure flight direction matches client subscription.
+		redisClient.on("message", function (channel, message) {			
+			// When a message on a channel is recevied, send to client.
 			var channelMessage = JSON.parse(message);
-			client.get('direction', function(err, name) {
-				if(channelMessage.direction == name) {
-					client.emit("update", message);
-				}
-			});			
-		});
+			client.emit("update", new Array(message));		
+			});
 	});
 
 	client.on('disconnect', function () {
 		redisClient.quit();
 	});
 
-}); 	
+});
+
+// Utility function to turn an object from Redis into an array of objects to send to the client.
+function makeArray(obj) {
+	var flightArray = [];
+	for(property in obj) {
+		flightArray.push(obj[property]);
+	}
+	console.log(flightArray);
+	return flightArray;
+}

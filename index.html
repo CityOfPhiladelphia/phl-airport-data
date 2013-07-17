@@ -60,7 +60,7 @@
     <div class="container">
     	<h2>Search for a flight</h2>
 	    <form id="target" class="form-search">
-	      <input id="number" type="text" value="" />
+	      <input id="number" type="text" value="" maxlength="4"/>
         <div id="direction" class="btn-group" data-toggle="buttons-radio">
           <button class="btn" name="arv" value="Arrival">ARV</button>
           <button class="btn" name="dpt" value="Departure">DPT</button>
@@ -72,39 +72,48 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="http://127.0.0.1:3000/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
     $(document).ready(function() {
       
-      var socket = io.connect('http://127.0.0.1:3000');
+      var socket = io.connect('/');
+      var direction;
 
       socket.on("update", function(data) {
 
-      	$("#information").remove();
+        $("#information").remove();
+        $("#no-information").remove();
 
-      	if(!data) {
-      		$("#data").append("<p id=\"information\">No information available for the flight number you entered.</p>");
-      	}
-      	else {
-	      	var flightData = JSON.parse(data);
-	        $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
-	        $("#information").append("<tr><td>Last Updated</td><td>" + flightData.updated + "</td></tr>");
-	        $("#information").append("<tr><td>Direction</td><td>" + flightData.direction + "</td>flightData.direction</tr>");
-	        $("#information").append("<tr><td>Flight Type</td><td>" + flightData.flightType + "</td></tr>");
-	        $("#information").append("<tr><td>Airline</td><td>" + flightData.airline + "</td></tr>");
-	        $("#information").append("<tr><td>Flight Number</td><td>" + flightData.flightNumber + "</td></tr>");
-	        $("#information").append("<tr><td>Airport</td><td>" + flightData.airport + "</td></tr>");
-	        $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + flightData.scheduledDateTime + "</td></tr>");
-	        $("#information").append("<tr><td>Estimated Time</td><td>" + flightData.estimatedTime + "</td></tr>");
-	        $("#information").append("<tr><td>Gate</td><td>" + flightData.gate + "</td></tr>");
-	        $("#information").append("<tr><td>Status</td><td>" + flightData.status + "</td></tr>");
-	        $("#information").append("</table>");
-      	}
+        if(!data.length) {
+          $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
+        }
+
+        for (item in data) {
+          var flightData = JSON.parse(data[item]);
+            if(flightData.direction == direction) {
+              $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
+              $("#information").append("<tr><td>Last Updated</td><td>" + flightData.updated + "</td></tr>");
+              $("#information").append("<tr><td>Direction</td><td>" + flightData.direction + "</td>flightData.direction</tr>");
+              $("#information").append("<tr><td>Flight Type</td><td>" + flightData.flightType + "</td></tr>");
+              $("#information").append("<tr><td>Airline</td><td>" + flightData.airline + "</td></tr>");
+              $("#information").append("<tr><td>Flight Number</td><td>" + flightData.flightNumber + "</td></tr>");
+              $("#information").append("<tr><td>Airport</td><td>" + flightData.airport + "</td></tr>");
+              $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + flightData.scheduledDateTime + "</td></tr>");
+              $("#information").append("<tr><td>Estimated Time</td><td>" + flightData.estimatedTime + "</td></tr>");
+              $("#information").append("<tr><td>Gate</td><td>" + flightData.gate + "</td></tr>");
+              $("#information").append("<tr><td>Status</td><td>" + flightData.status + "</td></tr>");
+              $("#information").append("</table>");
+            }
+            else {
+              if(!$("#information").length) {
+                $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
+              }
+            }
+          }
 
       });
 
       $("#target").submit(function() {
-        var direction;
         $("#target").find("#direction .btn.active").each(function() {
           direction = this.value;
         });

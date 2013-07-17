@@ -1,6 +1,5 @@
 /**
  * TODO: Error handling / Logging.
- * TODO: Forever!
  */
 
 // Include required modules.
@@ -42,6 +41,8 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 	    	var gate = flightRecords[i].substring(41,44);
 	    	var status = trimSpaces(flightRecords[i].substring(44,55));
 
+	    	var hashKey = direction + flightType + airline + flightNumber + airport;
+
 	    	// Create an object to hold flight details.
 	    	var flightObject = 
 	    		{'updated': updateDateTime, 'direction': direction, 'flightType': flightType, 'airline': airline, 
@@ -49,14 +50,8 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 	    		 'estimatedTime': estimatedTime, 'gate': gate, 'status': status
 	    		};
 
-	    	if(flightObject.direction == "Arrival") {
-	    		redisClient.select(0); // Database for arriving flights.
-	    	} else {
-	    		redisClient.select(1); // Database for departing flights.
-	    	}
-
 	    	// Update redis with new flight information (for REST calls).	 
-	        redisClient.set(flightNumber, JSON.stringify(flightObject));
+	        redisClient.hmset(flightNumber, hashKey, JSON.stringify(flightObject));
 
 	        // Publush updated flight information on channel matching flight number (for WebSocket connections).
 	        redisClient.publish(flightNumber, JSON.stringify(flightObject));
