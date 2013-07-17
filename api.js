@@ -86,6 +86,5 @@ function makeArray(obj) {
 	for(property in obj) {
 		flightArray.push(obj[property]);
 	}
-	console.log(flightArray);
 	return flightArray;
 }
