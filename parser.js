@@ -1,7 +1,3 @@
-/**
- * TODO: Error handling / Logging.
- */
-
 // Include required modules.
 var fs = require('fs');
 var redis = require("redis");

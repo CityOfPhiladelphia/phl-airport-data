@@ -1,7 +1,3 @@
-/**
- * TODO: Error handling / Logging.
- */
-
 // Include required modules.
 var express = require('express');
 var socketio = require('socket.io');
@@ -43,29 +39,32 @@ app.get('/gate/:gate', function(req, res){
 	getFlightData(gate, req, res);
 });
 
-// Get flight inforamtion by city.
-app.get('/city/:city', function(req, res){
-	var city = req.params.city.toUpperCase();
-	getFlightData(city, req, res);
-});
-
 // Get flight information by direction (Aarrival / Departure).
 app.get('/direction/:direction', function(req, res){
 	var direction = req.params.direction.toTitleCase();
 	getFlightData(direction, req, res);
 });
 
+// Get flight inforamtion by city.
+app.get('/city/:city', function(req, res){
+	var city = req.params.city.toUpperCase();
+	getFlightData(city, req, res);
+});
+
+// Get a list of cities with current flights (matches on partial city name).
+app.get('/cities/:city', function(req, res){
+	var city = req.params.city.toUpperCase();
+	var redisClient = redis.createClient();
+	redisClient.keys(city + '*', function(err, keylist) {
+		renderResponse(req, res, keylist);
+	});
+});
+
 // Function to retrieve requested flight infomation and send response.
 function getFlightData(type, req, res) {
 	var redisClient = redis.createClient();
 	redisClient.hgetall(type, function(err, obj) {
-		res.set('Cache-Control', 'max-age=60');
-		if(req.query.callback) {
-			res.jsonp(200, makeArray(obj));
-		}
-		else {
-			res.json(200, makeArray(obj));
-		}
+		renderResponse(req, res, makeArray(obj));
 	});
 	redisClient.quit();
 	return;
@@ -87,15 +86,25 @@ String.prototype.toTitleCase = function () {
     });
 };
 
+// Function to render response to send to the client.
+function renderResponse(req, res, content) {
+	res.set('Cache-Control', 'max-age=60');
+	if(req.query.callback) {
+		res.jsonp(200, content);
+	}
+	else {
+		res.json(200, content);
+	}
+	return;	
+}
+
 /*
  * WebSocket endpoint.
  */
 var socket = require('socket.io').listen(app.listen(port),{log: false});
-
 socket.on('connection', function(client){
 
 	var redisClient = redis.createClient();
-
 	client.on('send', function(data) {
 
 		// If client has already subscribed to a Redis channel, get a fresh connection.
@@ -124,7 +133,6 @@ socket.on('connection', function(client){
 		redisClient.subscribe(flightNumber + clientMessage.direction);
 		redisClient.on("message", function (channel, message) {			
 			// When a message on a channel is recevied, send to client.
-			var channelMessage = JSON.parse(message);
 			client.emit("update", new Array(message));		
 		});
 	});

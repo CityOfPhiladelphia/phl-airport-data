@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>PHL Flight Inforamtion WebSocket Test Page</title>
+    <title>PHL Flight Inforamtion API</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -47,10 +47,11 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">WebSocket Test Page</a>
+          <a class="brand">PHL Flight Inforamtion API</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <!--li><a href="#">Home</a></li-->
+              <li><a href="https://github.com/CityOfPhiladelphia/phl-airport-data">Code</a></li>
+              <li><a href="https://github.com/CityOfPhiladelphia/phl-airport-data/wiki">Docs</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -59,6 +60,7 @@
 
     <div class="container">
     	<h2>Search for a flight</h2>
+      <p>This demonstration uses the WebSocket endoint to update flight information. See the docs for more informtion.</p>
 	    <form id="target" class="form-search">
 	      <input id="number" type="text" value="" maxlength="4"/>
         <div id="direction" class="btn-group" data-toggle="buttons-radio">
@@ -92,7 +94,7 @@
           var flightData = JSON.parse(data[item]);
             if(flightData.direction == direction) {
               $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
-              $("#information").append("<tr><td>Last Updated</td><td>" + flightData.updated + "</td></tr>");
+              $("#information").append("<tr class=\"info\"><td>Last Updated</td><td>" + flightData.updated + "</td></tr>");
               $("#information").append("<tr><td>Direction</td><td>" + flightData.direction + "</td>flightData.direction</tr>");
               $("#information").append("<tr><td>Flight Type</td><td>" + flightData.flightType + "</td></tr>");
               $("#information").append("<tr><td>Airline</td><td>" + flightData.airline + "</td></tr>");
@@ -101,7 +103,7 @@
               $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + flightData.scheduledDateTime + "</td></tr>");
               $("#information").append("<tr><td>Estimated Time</td><td>" + flightData.estimatedTime + "</td></tr>");
               $("#information").append("<tr><td>Gate</td><td>" + flightData.gate + "</td></tr>");
-              $("#information").append("<tr><td>Status</td><td>" + flightData.status + "</td></tr>");
+              $("#information").append("<tr class=\"warning\"><td>Status</td><td>" + flightData.status + "</td></tr>");
               $("#information").append("</table>");
             }
             else {
@@ -110,6 +112,11 @@
               }
             }
           }
+
+          setTimeout(function(){
+               $("#information").find('.info').removeClass('info');
+               $("#information").find('.warning').removeClass('warning');
+           }, 3000);
 
       });
 
