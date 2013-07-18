@@ -39,19 +39,19 @@ app.get('/number/:number', function(req, res){
 
 // Get flight information by gate number.
 app.get('/gate/:gate', function(req, res){
-	var gate = req.params.gate;
+	var gate = req.params.gate.toUpperCase();
 	getFlightData(gate, req, res);
 });
 
 // Get flight inforamtion by city.
 app.get('/city/:city', function(req, res){
-	var city = req.params.city;
+	var city = req.params.city.toUpperCase();
 	getFlightData(city, req, res);
 });
 
 // Get flight information by direction (Aarrival / Departure).
 app.get('/direction/:direction', function(req, res){
-	var direction = req.params.direction;
+	var direction = req.params.direction.toTitleCase();
 	getFlightData(direction, req, res);
 });
 
@@ -79,6 +79,13 @@ function makeArray(obj) {
 	}
 	return flightArray;
 }
+
+// Convert text to titlecase.
+String.prototype.toTitleCase = function () {
+    return this.replace(/\w\S*/g, function(txt){
+    	return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+};
 
 /*
  * WebSocket endpoint.
