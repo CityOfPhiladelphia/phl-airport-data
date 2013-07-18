@@ -31,14 +31,14 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
     	if(flightRecords[i].length > 0) {
 
     		// Parse string containing flight information.
-			var direction = flightRecords[i].substring(0,1).replace("D", "Departure").replace("A", "Arrival");
-	    	var flightType = flightRecords[i].substring(1,2).replace("I", "International").replace("D", "Domestic");
-	    	var airline = flightRecords[i].substring(2,4);
-	    	var flightNumber = trimSpaces(flightRecords[i].substring(6,10));
+			var direction = trimSpaces(flightRecords[i].substring(0,1).replace("D", "Departure").replace("A", "Arrival"));
+	    	var flightType = trimSpaces(flightRecords[i].substring(1,2).replace("I", "International").replace("D", "Domestic"));
+	    	var airline = trimSpaces(flightRecords[i].substring(2,4));
+	    	var flightNumber = parseInt(trimSpaces(flightRecords[i].substring(6,10)),10);
 	    	var airport = trimSpaces(flightRecords[i].substring(10,25));
-	    	var scheduledDateTime = flightRecords[i].substring(25,33) + ' ' + flightRecords[i].substring(33,35) + ':' + + flightRecords[i].substring(35,37);;
-	    	var estimatedTime = flightRecords[i].substring(37,39) + ':' + flightRecords[i].substring(39,41);
-	    	var gate = flightRecords[i].substring(41,44);
+	    	var scheduledDateTime = trimSpaces(flightRecords[i].substring(25,33) + ' ' + flightRecords[i].substring(33,35) + ':' + + flightRecords[i].substring(35,37));
+	    	var estimatedTime = trimSpaces(flightRecords[i].substring(37,39) + ':' + flightRecords[i].substring(39,41));
+	    	var gate = trimSpaces(flightRecords[i].substring(41,44));
 	    	var status = trimSpaces(flightRecords[i].substring(44,55));
 
 	    	var hashKey = direction + flightType + airline + flightNumber + airport;
@@ -50,11 +50,14 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 	    		 'estimatedTime': estimatedTime, 'gate': gate, 'status': status
 	    		};
 
-	    	// Update redis with new flight information (for REST calls).	 
-	        redisClient.hmset(flightNumber, hashKey, JSON.stringify(flightObject));
+	    	// Update redis with new flight information (for REST calls).
+	        redisClient.hmset(flightNumber, hashKey, JSON.stringify(flightObject));	// Flights by flight number.
+	        redisClient.hmset(gate, hashKey, JSON.stringify(flightObject));			// Flights by gate.
+	        redisClient.hmset(airport, hashKey, JSON.stringify(flightObject));		// Fights by city.
+	        redisClient.hmset(direction, hashKey, JSON.stringify(flightObject));	// Flights by direction.
 
 	        // Publush updated flight information on channel matching flight number (for WebSocket connections).
-	        redisClient.publish(flightNumber, JSON.stringify(flightObject));
+	        redisClient.publish(flightNumber + direction, JSON.stringify(flightObject));
     	}
     }
     redisClient.quit();
