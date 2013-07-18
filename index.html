@@ -90,7 +90,7 @@
           $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
         }
 
-        for (item in data) {
+        for (var item in data) {
           var flightData = JSON.parse(data[item]);
             if(flightData.direction == direction) {
               $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
