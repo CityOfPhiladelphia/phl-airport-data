@@ -29,7 +29,6 @@ app.get('/assets/js/:file', function(req, res) {
 // Get flight information by flight number. 
 app.get('/number/:number', function(req, res){
 	var flightNumber = parseInt(req.params.number, 10);
-	console.log(flightNumber);
 	getFlightData(flightNumber, req, res);
 });
 
@@ -74,7 +73,7 @@ function getFlightData(type, req, res) {
 function makeArray(obj) {
 	var flightArray = [];
 	for(property in obj) {
-		flightArray.push(obj[property]);
+		flightArray.push(JSON.parse(obj[property]));
 	}
 	return flightArray;
 }
@@ -113,27 +112,25 @@ socket.on('connection', function(client){
 			redisClient = redis.createClient();
 		}
 
-		var clientMessage = JSON.parse(data);
-
 		// Respond with curret flight status.
-		var flightNumber = parseInt(clientMessage.flightNumber, 10);
+		var flightNumber = parseInt(data.flightNumber, 10);
 		redisClient.hgetall(flightNumber, function(err, obj) {
 			// Construct the array of flight objects to return.
 			var flightArray = [];
 			for(property in obj) {
 				var flight = JSON.parse(obj[property]);
-				if (clientMessage.direction == flight.direction) {
-					flightArray.push(obj[property]);
+				if (data.direction == flight.direction) {
+					flightArray.push(JSON.parse(obj[property]));
 				}
 			}
 			client.emit("update", flightArray);
 		});
 
 		// Listen on Redis channel for updates.
-		redisClient.subscribe(flightNumber + clientMessage.direction);
+		redisClient.subscribe(flightNumber + data.direction);
 		redisClient.on("message", function (channel, message) {			
 			// When a message on a channel is recevied, send to client.
-			client.emit("update", new Array(message));		
+			client.emit("update", new Array(JSON.parse(message)));		
 		});
 	});
 

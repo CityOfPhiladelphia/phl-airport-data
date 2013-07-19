@@ -91,26 +91,25 @@
         }
 
         for (var item in data) {
-          var flightData = JSON.parse(data[item]);
-            if(flightData.direction == direction) {
-              $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
-              $("#information").append("<tr class=\"info\"><td>Last Updated</td><td>" + flightData.updated + "</td></tr>");
-              $("#information").append("<tr><td>Direction</td><td>" + flightData.direction + "</td>flightData.direction</tr>");
-              $("#information").append("<tr><td>Flight Type</td><td>" + flightData.flightType + "</td></tr>");
-              $("#information").append("<tr><td>Airline</td><td>" + flightData.airline + "</td></tr>");
-              $("#information").append("<tr><td>Flight Number</td><td>" + flightData.flightNumber + "</td></tr>");
-              $("#information").append("<tr><td>Airport</td><td>" + flightData.airport + "</td></tr>");
-              $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + flightData.scheduledDateTime + "</td></tr>");
-              $("#information").append("<tr><td>Estimated Time</td><td>" + flightData.estimatedTime + "</td></tr>");
-              $("#information").append("<tr><td>Gate</td><td>" + flightData.gate + "</td></tr>");
-              $("#information").append("<tr class=\"warning\"><td>Status</td><td>" + flightData.status + "</td></tr>");
-              $("#information").append("</table>");
+          if(data[item].direction == direction) {
+            $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
+            $("#information").append("<tr class=\"info\"><td>Last Updated</td><td>" + data[item].updated + "</td></tr>");
+            $("#information").append("<tr><td>Direction</td><td>" + data[item].direction + "</td>data[item].direction</tr>");
+            $("#information").append("<tr><td>Flight Type</td><td>" + data[item].flightType + "</td></tr>");
+            $("#information").append("<tr><td>Airline</td><td>" + data[item].airline + "</td></tr>");
+            $("#information").append("<tr><td>Flight Number</td><td>" + data[item].flightNumber + "</td></tr>");
+            $("#information").append("<tr><td>Airport</td><td>" + data[item].airport + "</td></tr>");
+            $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + data[item].scheduledDateTime + "</td></tr>");
+            $("#information").append("<tr><td>Estimated Time</td><td>" + data[item].estimatedTime + "</td></tr>");
+            $("#information").append("<tr><td>Gate</td><td>" + data[item].gate + "</td></tr>");
+            $("#information").append("<tr class=\"warning\"><td>Status</td><td>" + data[item].status + "</td></tr>");
+            $("#information").append("</table>");
+          }
+          else {
+            if(!$("#information").length) {
+              $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
             }
-            else {
-              if(!$("#information").length) {
-                $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
-              }
-            }
+          }
           }
 
           setTimeout(function(){
@@ -125,7 +124,7 @@
           direction = this.value;
         });
           var flightNumber = $("#number").val();
-          socket.emit("send", JSON.stringify({"flightNumber": flightNumber, "direction": direction}));
+          socket.emit("send", {"flightNumber": flightNumber, "direction": direction});
           return false;
       });
 
