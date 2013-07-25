@@ -7,7 +7,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <!-- Le styles -->
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <style>
       body {
@@ -23,18 +22,6 @@
       }
     </style>
     <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-57-precomposed.png">
-    <link rel="shortcut icon" href="assets/ico/favicon.png">
   </head>
 
   <body>
@@ -69,47 +56,45 @@
         </div>
 	    </form>
 	    <div id="data"></div>
-      
-    </div> <!-- /container -->
-
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript">
+    </div> 
+  </body>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
     $(document).ready(function() {
-      
-      var socket = io.connect('/');
-      var direction;
+        var socket = io.connect('/');
+        var direction;
 
-      socket.on("update", function(data) {
+        socket.on("update", function(data) {
 
-        $("#information").remove();
-        $("#no-information").remove();
+          $("#information").remove();
+          $("#no-information").remove();
 
-        if(!data.length) {
-          $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
-        }
-
-        for (var item in data) {
-          if(data[item].direction == direction) {
-            $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
-            $("#information").append("<tr class=\"info\"><td>Last Updated</td><td>" + data[item].updated + "</td></tr>");
-            $("#information").append("<tr><td>Direction</td><td>" + data[item].direction + "</td>data[item].direction</tr>");
-            $("#information").append("<tr><td>Flight Type</td><td>" + data[item].flightType + "</td></tr>");
-            $("#information").append("<tr><td>Airline</td><td>" + data[item].airline + "</td></tr>");
-            $("#information").append("<tr><td>Flight Number</td><td>" + data[item].flightNumber + "</td></tr>");
-            $("#information").append("<tr><td>Airport</td><td>" + data[item].airport + "</td></tr>");
-            $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + data[item].scheduledDateTime + "</td></tr>");
-            $("#information").append("<tr><td>Estimated Time</td><td>" + data[item].estimatedTime + "</td></tr>");
-            $("#information").append("<tr><td>Gate</td><td>" + data[item].gate + "</td></tr>");
-            $("#information").append("<tr class=\"warning\"><td>Status</td><td>" + data[item].status + "</td></tr>");
-            $("#information").append("</table>");
+          if(!data.length) {
+            $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
           }
-          else {
-            if(!$("#information").length) {
-              $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
+
+          for (var item in data) {
+            if(data[item].direction == direction) {
+              $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
+              $("#information").append("<tr class=\"info\"><td>Last Updated</td><td>" + data[item].updated + "</td></tr>");
+              $("#information").append("<tr><td>Direction</td><td>" + data[item].direction + "</td>data[item].direction</tr>");
+              $("#information").append("<tr><td>Flight Type</td><td>" + data[item].flightType + "</td></tr>");
+              $("#information").append("<tr><td>Airline</td><td>" + data[item].airline + "</td></tr>");
+              $("#information").append("<tr><td>Flight Number</td><td>" + data[item].flightNumber + "</td></tr>");
+              $("#information").append("<tr><td>Airport</td><td>" + data[item].airport + "</td></tr>");
+              $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + data[item].scheduledDateTime + "</td></tr>");
+              $("#information").append("<tr><td>Estimated Time</td><td>" + data[item].estimatedTime + "</td></tr>");
+              $("#information").append("<tr><td>Gate</td><td>" + data[item].gate + "</td></tr>");
+              $("#information").append("<tr class=\"warning\"><td>Status</td><td>" + data[item].status + "</td></tr>");
+              $("#information").append("</table>");
             }
-          }
+            else {
+              if(!$("#information").length) {
+                $("#data").append("<p id=\"no-information\">No information available for the flight number you entered.</p>");
+              }
+            }
           }
 
           setTimeout(function(){
@@ -117,19 +102,16 @@
                $("#information").find('.warning').removeClass('warning');
            }, 3000);
 
-      });
-
-      $("#target").submit(function() {
-        $("#target").find("#direction .btn.active").each(function() {
-          direction = this.value;
         });
-          var flightNumber = $("#number").val();
-          socket.emit("send", {"flightNumber": flightNumber, "direction": direction});
-          return false;
-      });
 
+        $("#target").submit(function() {
+          $("#target").find("#direction .btn.active").each(function() {
+            direction = this.value;
+          });
+            var flightNumber = $("#number").val();
+            socket.emit("subscribe", {"flightNumber": flightNumber, "direction": direction});
+            return false;
+        });
     });
-    </script>
-
-  </body>
+  </script>
 </html>

@@ -1,6 +1,9 @@
+/*
+ * REST endpoint.
+ */
+
 // Include required modules.
 var express = require('express');
-var socketio = require('socket.io');
 var redis = require("redis");
 
 // Port to run server on.
@@ -10,21 +13,7 @@ var port = process.argv[2] || 3000;
 var app = express();
 
 // Serve static assets.
-app.get('/', function(req, res){
-	res.sendfile(__dirname + '/index.html');
-});
-
-app.get('/assets/css/:file', function(req, res) {
-	res.sendfile(__dirname + '/assets/css/' + req.params.file);
-});
-
-app.get('/assets/js/:file', function(req, res) {
-	res.sendfile(__dirname + '/assets/js/' + req.params.file);
-});
-
-/*
- * REST endpoint.
- */
+app.use(express.static(__dirname));
 
 // Get flight information by flight number. 
 app.get('/number/:number', function(req, res){
@@ -53,17 +42,24 @@ app.get('/city/:city', function(req, res){
 // Get a list of cities with current flights (matches on partial city name).
 app.get('/cities/:city', function(req, res){
 	var city = req.params.city.toUpperCase();
-	var redisClient = redis.createClient();
-	redisClient.keys(city + '*', function(err, keylist) {
-		renderResponse(req, res, keylist);
+	if(city.length < 2) {
+		renderResponse(req, res, 400, { error: 'City name must be a minimum of two characters' } );
+	}
+	else {
+		var redisClient = redis.createClient();
+		redisClient.keys(city + '*', function(err, keylist) {
+		renderResponse(req, res, 200, keylist);
+		redisClient.quit();
 	});
+
+	}
 });
 
 // Function to retrieve requested flight infomation and send response.
 function getFlightData(type, req, res) {
 	var redisClient = redis.createClient();
 	redisClient.hgetall(type, function(err, obj) {
-		renderResponse(req, res, makeArray(obj));
+		renderResponse(req, res, 200, makeArray(obj));
 	});
 	redisClient.quit();
 	return;
@@ -86,13 +82,13 @@ String.prototype.toTitleCase = function () {
 };
 
 // Function to render response to send to the client.
-function renderResponse(req, res, content) {
+function renderResponse(req, res, statusCode, content) {
 	res.set('Cache-Control', 'max-age=60');
 	if(req.query.callback) {
-		res.jsonp(200, content);
+		res.jsonp(statusCode, content);
 	}
 	else {
-		res.json(200, content);
+		res.json(statusCode, content);
 	}
 	return;	
 }
@@ -104,7 +100,7 @@ var socket = require('socket.io').listen(app.listen(port),{log: false});
 socket.on('connection', function(client){
 
 	var redisClient = redis.createClient();
-	client.on('send', function(data) {
+	client.on('subscribe', function(data) {
 
 		// If client has already subscribed to a Redis channel, get a fresh connection.
 		if(redisClient.connected) {
