@@ -43,10 +43,10 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 	    	var status = trimSpaces(flightRecords[i].substring(44,55));
                 var concourse = gate.substring(0,1);
                 var carousel;    
-                var terminal = gate.substring(0,1).replace("B","B/C").replace("C","B/C");
-                var security = gate.substring(0,1).replace("D","D/E").replace("E","D/E");
-                var garage = terminal.replace("A","A/B").replace("E","E/F").replace("F","E/F");
-                var septa = "Airport Terminal " + concourse.replace("C","C-D").replace("D","C-D").replace("E","E-F").replace("F","E-F");
+                var terminal = gate.substring(0,1).replace(/[BC]/,"B/C");
+                var security = gate.substring(0,1).replace(/[DE]/,"D/E");
+                var garage = terminal.replace("A","A/B").replace(/[EF]/,"E/F");
+                var septa = "Airport Terminal " + concourse.replace(/[CD]/,"C-D").replace(/[EF]/,"E-F");
                 
                 if (status === "Arrival") {
                             if (flightType === "I" && terminal === "A") {
