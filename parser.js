@@ -42,7 +42,7 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 	    	var gate = trimSpaces(flightRecords[i].substring(41,44));
 	    	var status = trimSpaces(flightRecords[i].substring(44,55));
                 var concourse = gate.substring(0,1);
-                var carousel;    
+                var carousel = trimSpaces(flightRecords[i].substring(65));    
                 var terminal = gate.substring(0,1).replace(/[BC]/,"B/C");
                 var security = gate.substring(0,1).replace(/[DE]/,"D/E");
                 var garage = terminal.replace("A","A/B").replace(/[EF]/,"E/F");
