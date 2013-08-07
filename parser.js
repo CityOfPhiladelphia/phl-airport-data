@@ -32,7 +32,7 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 	    	var airline = trimSpaces(flightRecords[i].substring(2,4));
 	    	var flightNumber = parseInt(trimSpaces(flightRecords[i].substring(6,10)),10);
 	    	var airport = trimSpaces(flightRecords[i].substring(10,25));
-	    	var scheduledDateTime = trimSpaces(flightRecords[i].substring(25,33) + ' ' + flightRecords[i].substring(33,35) + ':' + + flightRecords[i].substring(35,37));
+	    	var scheduledDateTime = trimSpaces(flightRecords[i].substring(25,33) + ' ' + flightRecords[i].substring(33,35) + ':' + flightRecords[i].substring(35,37));
 	    	var estimatedTime = trimSpaces(flightRecords[i].substring(37,39) + ':' + flightRecords[i].substring(39,41));
 	    	var gate = trimSpaces(flightRecords[i].substring(41,44));
 	    	var status = trimSpaces(flightRecords[i].substring(44,55));
