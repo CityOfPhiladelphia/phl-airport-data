@@ -36,9 +36,8 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 	    	var airline = trimSpaces(flightRecords[i].substring(2,4));
 	    	var flightNumber = parseInt(trimSpaces(flightRecords[i].substring(6,10)),10);
 	    	var airport = trimSpaces(flightRecords[i].substring(10,25));
-                var scheduledDate = trimSpaces(flightRecords[i].substring(25,33));
-	    	var scheduledTime = trimSpaces(flightRecords[i].substring(33,35) + ':' + flightRecords[i].substring(35,37));
-	    	var estimatedTime = trimSpaces(flightRecords[i].substring(37,39) + ':' + flightRecords[i].substring(39,41));
+                var scheduledDateTime = new Date(trimSpaces(flightRecords[i].substring(25,33) + ' ' + trimSpaces(flightRecords[i].substring(25,33)));
+                var estimatedDateTime = new Date(trimSpaces(flightRecords[i].substring(25,33) + ' ' + flightRecords[i].substring(37,39) + ':' + flightRecords[i].substring(39,41)));
 	    	var gate = trimSpaces(flightRecords[i].substring(41,44));
 	    	var status = trimSpaces(flightRecords[i].substring(44,55));
                 var concourse = gate.substring(0,1);
@@ -47,6 +46,13 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
                 var security = gate.substring(0,1).replace(/[DE]/,"D/E");
                 var garage = terminal.replace("A","A/B").replace(/[EF]/,"E/F");
                 var septa = "Airport Terminal " + concourse.replace(/[CD]/,"C-D").replace(/[EF]/,"E-F");
+                
+                //Increment to next day if applicable
+                var schedHour = parseInt(flightRecords[i].substring(33,35));
+                var estHour = parseInt(flightRecords[i].substring(37,39));
+                if (schedHour > 3 && estHour < (schedHour-2)) {
+                    estimatedDateTime.setDate(estimatedDateTime.getDate()+1);
+                }
                 
                 if (status === "Arrival") {
                             if (flightType === "I" && terminal === "A") {
@@ -101,8 +107,8 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 	    	// Create an object to hold flight details.
 	    	var flightObject = 
 	    		{'updated': updateDateTime, 'direction': direction, 'flightType': flightType, 'airline': airline, 
-	    		 'flightNumber': flightNumber, 'airport': airport, 'scheduledDate': scheduledDate, 'scheduledTime':scheduledTime, 
-	    		 'estimatedTime': estimatedTime, 'gate': gate, 'status': status,
+	    		 'flightNumber': flightNumber, 'airport': airport, 'scheduledDate': scheduledDateTime, 'scheduledDateTime':scheduledTime, 
+	    		 'estimatedDateTime': estimatedDateTime, 'gate': gate, 'status': status,
                          'carousel': carousel, 'terminal': terminal, 'security': security,'garage': garage, 'septa': septa
 	    		};
 
