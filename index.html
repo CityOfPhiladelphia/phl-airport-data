@@ -75,7 +75,7 @@
 
         // Utility function to format a date.
         function formatDate(date) {
-          return date.getDate() + '/' + date.getDay() + '/' + date.getYear();
+          return date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
         }
 
         var socket = io.connect('/');
