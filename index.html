@@ -67,9 +67,9 @@
         // Utility function to format time of day.
         function formatTime(date) {
           var hours = date.getHours() == 0 ? "12" : date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
-          var minutes = (date.getMinutes() < 9 ? "0" : "") + date.getMinutes();
+          var minutes = (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
           var ampm = date.getHours() < 12 ? "AM" : "PM";
-          var formattedTime = hours + ":" + minutes + " " + ampm;
+          var formattedTime = hours + ":" + date.getMinutes() + " " + ampm;
           return formattedTime;
         }
 
