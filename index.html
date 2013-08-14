@@ -63,6 +63,21 @@
   <script type="text/javascript" src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
     $(document).ready(function() {
+
+        // Utility function to format time of day.
+        function formatTime(date) {
+          var hours = date.getHours() == 0 ? "12" : date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
+          var minutes = (date.getMinutes() < 9 ? "0" : "") + date.getMinutes();
+          var ampm = date.getHours() < 12 ? "AM" : "PM";
+          var formattedTime = hours + ":" + minutes + " " + ampm;
+          return formattedTime;
+        }
+
+        // Utility function to format a date.
+        function formatDate(date) {
+          return date.getDate() + '/' + date.getDay() + '/' + date.getYear();
+        }
+
         var socket = io.connect('/');
         var direction;
 
@@ -77,16 +92,30 @@
 
           for (var item in data) {
             if(data[item].direction == direction) {
+
+              // Formate dates / times.
+              var updatedDateTime = new Date(data[item].updated);
+              var scheduledDateTime = new Date(data[item].scheduledDateTime);
+              var estimatedDateTime = new Date(data[item].estimatedDateTime);
+              var updated = formatDate(updatedDateTime) + ' ' + formatTime(updatedDateTime);
+              var scheduled = formatDate(scheduledDateTime) + ' ' + formatTime(scheduledDateTime);
+              var estimated = formatDate(estimatedDateTime) + ' ' + formatTime(estimatedDateTime);
+
               $("#data").append("<table id=\"information\" class=\"table table-bordered table-striped\">");
-              $("#information").append("<tr class=\"info\"><td>Last Updated</td><td>" + data[item].updated + "</td></tr>");
+              $("#information").append("<tr class=\"info\"><td>Last Updated</td><td>" + updated + "</td></tr>");
               $("#information").append("<tr><td>Direction</td><td>" + data[item].direction + "</td>data[item].direction</tr>");
               $("#information").append("<tr><td>Flight Type</td><td>" + data[item].flightType + "</td></tr>");
               $("#information").append("<tr><td>Airline</td><td>" + data[item].airline + "</td></tr>");
               $("#information").append("<tr><td>Flight Number</td><td>" + data[item].flightNumber + "</td></tr>");
               $("#information").append("<tr><td>Airport</td><td>" + data[item].airport + "</td></tr>");
-              $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + data[item].scheduledDateTime + "</td></tr>");
-              $("#information").append("<tr><td>Estimated Time</td><td>" + data[item].estimatedTime + "</td></tr>");
+              $("#information").append("<tr><td>Scheduled Date / Time</td><td>" + scheduled + "</td></tr>");
+              $("#information").append("<tr><td>Estimated Date / Time</td><td>" + estimated + "</td></tr>");
               $("#information").append("<tr><td>Gate</td><td>" + data[item].gate + "</td></tr>");
+              $("#information").append("<tr><td>Baggage Carousel</td><td>" + data[item].carousel + "</td></tr>");
+              $("#information").append("<tr><td>Terminal</td><td>" + data[item].terminal + "</td></tr>");
+              $("#information").append("<tr><td>Security Checkpoint</td><td>" + data[item].security + "</td></tr>");
+              $("#information").append("<tr><td>Parking Garage</td><td>" + data[item].garage + "</td></tr>");
+              $("#information").append("<tr><td>SEPTA Rail Stop</td><td><a href=\"http://app.septa.org/nta/\" target=\"_blank\">" + data[item].septa + "</a></td></tr>");
               $("#information").append("<tr class=\"warning\"><td>Status</td><td>" + data[item].status + "</td></tr>");
               $("#information").append("</table>");
             }
