@@ -1,2 +1,3 @@
 getfile.sh
 node_modules/
+.vagrant/
