@@ -1,3 +1,5 @@
 getfile.sh
 node_modules/
 .vagrant/
+logs/
+*.rdb
