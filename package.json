@@ -1,12 +1,13 @@
 {
-    "name": "phl-airport-data",
-    "version": "0.0.1",
-    "description": "A REST and WebSocket API for PHL Flight Information Data",
-    "dependencies": {
-        "socket.io": "latest",
-        "express": "latest",
-        "redis": "latest",
-        "forever": "latest"
-    },
-    "author": "Mark Headd"
+  "name": "phl-airport-data",
+  "version": "0.0.1",
+  "description": "A REST and WebSocket API for PHL Flight Information Data",
+  "dependencies": {
+    "socket.io": "latest",
+    "express": "latest",
+    "redis": "latest",
+    "forever": "latest",
+    "bunyan": "~0.21.4"
+  },
+  "author": "Mark Headd"
 }
