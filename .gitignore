@@ -1,5 +1,6 @@
 getfile.sh
 node_modules/
 .vagrant/
-logs/
+*.log
 *.rdb
+npm-debug.log
