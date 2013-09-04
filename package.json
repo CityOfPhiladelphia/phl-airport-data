@@ -1,6 +1,6 @@
 {
   "name": "phl-airport-data",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "description": "A REST and WebSocket API for PHL Flight Information Data",
   "dependencies": {
     "socket.io": "latest",
@@ -9,5 +9,5 @@
     "forever": "latest",
     "bunyan": "~0.21.4"
   },
-  "author": "Mark Headd"
+  "author": "Mark Headd, Dave Walk"
 }
