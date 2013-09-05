@@ -130,5 +130,5 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
       }
     }
     redisClient.quit();
-    process.exit(0);
 });
+process.exit(0);
