@@ -129,6 +129,7 @@ fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
         redisClient.publish(flightNumber + direction, JSON.stringify(flightObject));
       }
     }
-    redisClient.quit();
+    redisClient.quit(function() {
+      process.exit(0);
+    });
 });
-process.exit(0);
