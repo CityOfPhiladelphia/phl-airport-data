@@ -7,12 +7,14 @@ var express = require('express');
 var redis = require('redis');
 log = require('./lib/logger').log;
 var responseLog = require('./lib/response-log');
+var utilities = require('./lib/utilities')();
 
 // Port to run server on.
 var port = process.argv[2] || 3000;
 
-// Start Express app.
+// Start  app.
 var app = express();
+var socket = require('socket.io').listen(app.listen(port),{log: false});
 
 // Serve static assets.
 app.use(express.static(__dirname));
@@ -38,7 +40,7 @@ app.get('/gate/:gate', function(req, res){
   getFlightData(gate, req, res);
 });
 
-// Get flight information by direction (Aarrival / Departure).
+// Get flight information by direction (Arrival / Departure).
 app.get('/direction/:direction', function(req, res){
   var direction = req.params.direction.toTitleCase();
   getFlightData(direction, req, res);
@@ -74,31 +76,14 @@ function getFlightData(type, req, res) {
       log.error({req: req, error: err}, 'Redis hgetall error in getFlightData function of REST request');
       return;
     }
-    renderResponse(req, res, 200, makeArray(obj));
+    renderResponse(req, res, 200, utilities.makeArray(obj));
   });
   redisClient.quit();
   return;
 }
 
-// Utility function to turn an object from Redis into an array of objects to send to the client.
-function makeArray(obj) {
-  var flightArray = [];
-  for(property in obj) {
-    flightArray.push(JSON.parse(obj[property]));
-  }
-  return flightArray;
-}
-
-// Convert text to titlecase.
-String.prototype.toTitleCase = function () {
-    return this.replace(/\w\S*/g, function(txt){
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-};
-
 // Function to render response to send to the client.
 function renderResponse(req, res, statusCode, content) {
-  res.set('Cache-Control', 'max-age=60');
   if(req.query.callback) {
     res.jsonp(statusCode, content);
   }
@@ -111,7 +96,6 @@ function renderResponse(req, res, statusCode, content) {
 /*
  * WebSocket endpoint.
  */
-var socket = require('socket.io').listen(app.listen(port),{log: false});
 log.debug('Websockets and Express server listening on port', port);
 
 socket.on('connection', function(client){
@@ -138,15 +122,7 @@ socket.on('connection', function(client){
         log.error({req: req, error: err}, 'Redis hgetall error in getFlightData function of websockets request');
         return;
       }
-      // Construct the array of flight objects to return.
-      var flightArray = [];
-      for(property in obj) {
-        var flight = JSON.parse(obj[property]);
-        if (data.direction == flight.direction) {
-          flightArray.push(JSON.parse(obj[property]));
-        }
-      }
-      client.emit("update", flightArray);
+      client.emit("update", utilities.makeArray(obj));
     });
 
     // Listen on Redis channel for updates.
