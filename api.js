@@ -42,7 +42,7 @@ app.get('/gate/:gate', function(req, res){
 
 // Get flight information by direction (Arrival / Departure).
 app.get('/direction/:direction', function(req, res){
-  var direction = req.params.direction.toTitleCase();
+  var direction = utilities.toTitleCase(req.params.direction);
   getFlightData(direction, req, res);
 });
 
