@@ -1,4 +1,5 @@
 getfile.sh
+nginx.conf
 node_modules/
 .vagrant/
 *.log
