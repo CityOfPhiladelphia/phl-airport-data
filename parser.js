@@ -47,6 +47,7 @@ fs.readFile(__dirname + '/data/InfaxESB-1.dat', function(err, data) {
           redisClient.hmset(flightObject.gate, hashKey, JSON.stringify(flightObject));          // Flights by gate.
           redisClient.hmset(flightObject.airport, hashKey, JSON.stringify(flightObject));       // Fights by city.
           redisClient.hmset(flightObject.direction, hashKey, JSON.stringify(flightObject));     // Flights by direction.
+          redisClient.hmset(flightObject.airline, hashKey, JSON.stringify(flightObject));       // Flights by airline.
 
           // Publish updated flight information on channel matching flight number (for WebSocket connections).
           redisClient.publish(flightObject.flightNumber + flightObject.direction, JSON.stringify(flightObject));

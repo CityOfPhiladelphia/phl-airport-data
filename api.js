@@ -46,6 +46,12 @@ app.get('/direction/:direction', function(req, res){
   getFlightData(direction, req, res);
 });
 
+// Get flight information by airline.
+app.get('/airline/:airline', function(req, res){
+  var airline = req.params.airline.toUpperCase();
+  getFlightData(airline, req, res);
+});
+
 // Get flight inforamtion by city.
 app.get('/city/:city', function(req, res){
   var city = req.params.city.toUpperCase();
