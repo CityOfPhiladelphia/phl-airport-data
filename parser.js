@@ -8,7 +8,7 @@ var utilities = require('./lib/utilities')();
  * File parser
  */
 
-fs.readFile(__dirname + '/data/InfaxESB-1.dat', function(err, data) {
+fs.readFile(__dirname + '/data/InfaxESB.dat', function(err, data) {
 
     if (err) {
       log.error({error: err}, 'Error parsing flight file');
