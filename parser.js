@@ -16,7 +16,7 @@ fs.readFile(__dirname + '/data/InfaxESB-1.dat', function(err, data) {
     }
 
     // Split the file on line breaks to get each record.
-    var flightRecords = data.toUpperCase().toString().split("\n");
+    var flightRecords = data.toString().toUpperCase().split("\n");
 
     // Firt row is the date/time of update
     var updateDateTime = utilities.getUpdateTime(flightRecords[0]);
